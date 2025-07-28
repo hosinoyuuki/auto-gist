@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+  echo "Usage: $0 <filename>"
+  exit 1
+fi
+
+FILE="$1"
+DESCRIPTION="Auto-uploaded $FILE"
+
+if [ ! -f "$FILE" ]; then
+  echo "Error: File '$FILE' not found."
+  exit 1
+fi
+
+# Gist 作成：URL 出力を確認
+URL=$(gh gist create "$FILE" --public --desc "$DESCRIPTION" 2>/dev/null)
+echo "gh gist create output: $URL"
+
+# URL を Raw URL に変換（debug用に echo 入れる）
+RAW_URL=$(echo "$URL" | sed -E "s|https://gist.github.com/([^/]+)/([a-f0-9]+)|https://gist.githubusercontent.com/\1/\2/raw/$(basename "$FILE")|")
+
+echo "Generated Raw URL: $RAW_URL"
